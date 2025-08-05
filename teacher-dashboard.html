@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Teacher Dashboard - Student Bank</title>
+  <link rel="stylesheet" href="login.css"/>
+  <style>
+    .dashboard-container {
+      max-width: 900px;
+      margin: 2.5rem auto;
+      background: var(--core-white);
+      border-radius: 16px;
+      box-shadow: var(--core-shadow);
+      padding: 2rem 1.2rem 1.4rem 1.2rem;
+      font-family: var(--core-font);
+    }
+    .dashboard-title {
+      color: var(--core-purple);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.1rem;
+      text-align: center;
+    }
+    .dashboard-section-title {
+      color: var(--core-purple);
+      font-size: 1.13rem;
+      font-weight: 700;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    .students-table, .fraud-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+      background: var(--core-gray);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .students-table th, .students-table td,
+    .fraud-table th, .fraud-table td {
+      padding: 0.62rem 0.55rem;
+      border-bottom: 1px solid #e6e6ee;
+      font-size: 1rem;
+    }
+    .students-table th, .fraud-table th {
+      background: var(--core-gray);
+      font-weight: 700;
+      color: #7e57c2;
+      text-align: left;
+    }
+    .students-table tr:last-child td, .fraud-table tr:last-child td {
+      border-bottom: none;
+    }
+    .btn-action {
+      padding: 0.32rem 0.9rem;
+      background: var(--core-purple);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.98rem;
+      cursor: pointer;
+      margin-right: 0.4rem;
+      transition: background 0.13s;
+    }
+    .btn-action:hover { background: #5e339e; }
+    .btn-remove { background: #a90429 !important; }
+    .btn-remove:hover { background: #444 !important; }
+    .fraud-reviewed {
+      color: var(--core-green);
+      font-weight: 600;
+    }
+    .fraud-unreviewed {
+      color: #a90429;
+      font-weight: 600;
+    }
+    @media (max-width: 900px) {
+      .dashboard-container { max-width: 99vw; }
+      .students-table, .fraud-table { font-size: 0.97rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <div class="dashboard-title">Teacher Dashboard</div>
+
+    <div class="dashboard-section-title">Students</div>
+    <table class="students-table" id="students-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Balance</th>
+          <th>Savings</th>
+          <th>Last Login</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="students-tbody">
+        <!-- JS-populated student rows -->
+      </tbody>
+    </table>
+
+    <div class="dashboard-section-title">Fraud Reports</div>
+    <table class="fraud-table" id="fraud-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Student</th>
+          <th>Email</th>
+          <th>Details</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="fraud-tbody">
+        <!-- JS-populated fraud report rows -->
+      </tbody>
+    </table>
+  </div>
+  <script>
+    // Demo student data
+    let students = [
+      {name:"Alex Smith", email:"alex.smith@stu.westsilc.org", balance:1254.73, savings:300, lastLogin:"2025-08-05"},
+      {name:"Jamie Lee", email:"jamie.lee@stu.westsilc.org", balance:890.10, savings:120, lastLogin:"2025-08-04"},
+      {name:"Priya Patel", email:"priya.patel@stu.westsilc.org", balance:1423.50, savings:450, lastLogin:"2025-08-05"},
+      {name:"Mia Chen", email:"mia.chen@stu.westsilc.org", balance:530.00, savings:110, lastLogin:"2025-08-03"}
+    ];
+    function renderStudents() {
+      let tb = document.getElementById('students-tbody');
+      tb.innerHTML = '';
+      students.forEach((s,i) => {
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${s.name}</td>
+          <td>${s.email}</td>
+          <td>£${s.balance.toFixed(2)}</td>
+          <td>£${s.savings.toFixed(2)}</td>
+          <td>${s.lastLogin}</td>
+          <td>
+            <button class="btn-action" onclick="rewardStudent(${i})">Reward</button>
+            <button class="btn-action btn-remove" onclick="removeStudent(${i})">Remove</button>
+          </td>
+        `;
+        tb.appendChild(tr);
+      });
+    }
+    window.rewardStudent = function(idx) {
+      let amt = prompt("Reward amount for " + students[idx].name + " (£):");
+      amt = parseFloat(amt);
+      if (!amt || amt<=0) return alert("Invalid amount.");
+      students[idx].balance += amt;
+      alert("Rewarded £"+amt.toFixed(2)+" to "+students[idx].name);
+      renderStudents();
+    }
+    window.removeStudent = function(idx) {
+      if (confirm("Are you sure you want to remove "+students[idx].name+"?")) {
+        students.splice(idx,1);
+        renderStudents();
+      }
+    }
+    renderStudents();
+
+    // Demo fraud data
+    let fraudReports = [
+      {date:"2025-08-04", student:"Jamie Lee", email:"jamie.lee@stu.westsilc.org", details:"Strange transaction for £90", status:"Unreviewed"},
+      {date:"2025-08-03", student:"Alex Smith", email:"alex.smith@stu.westsilc.org", details:"Card frozen unexpectedly", status:"Reviewed"}
+    ];
+    function renderFraud() {
+      let tb = document.getElementById('fraud-tbody');
+      tb.innerHTML = '';
+      fraudReports.forEach((f,i) => {
+        let statusClass = f.status === "Reviewed" ? "fraud-reviewed" : "fraud-unreviewed";
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${f.date}</td>
+          <td>${f.student}</td>
+          <td>${f.email}</td>
+          <td>${f.details}</td>
+          <td class="${statusClass}">${f.status}</td>
+          <td>
+            <button class="btn-action" onclick="markReviewed(${i})" ${f.status==="Reviewed"?"disabled":""}>Mark Reviewed</button>
+            <button class="btn-action btn-remove" onclick="removeFraud(${i})">Remove</button>
+          </td>
+        `;
+        tb.appendChild(tr);
+      });
+    }
+    window.markReviewed = function(idx) {
+      fraudReports[idx].status = "Reviewed";
+      renderFraud();
+    }
+    window.removeFraud = function(idx) {
+      if (confirm("Remove this fraud report?")) {
+        fraudReports.splice(idx,1);
+        renderFraud();
+      }
+    }
+    renderFraud();
+  </script>
+</body>
+</html>
