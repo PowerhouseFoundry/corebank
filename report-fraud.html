@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Report Potential Fraud - Core Banking</title>
+  <link rel="stylesheet" href="login.css"/>
+  <style>
+    .fraud-report-container {
+      max-width: 425px;
+      margin: 2.5rem auto;
+      background: var(--core-white);
+      border-radius: 16px;
+      box-shadow: var(--core-shadow);
+      padding: 2rem 1.2rem 1.4rem 1.2rem;
+      font-family: 'Montserrat', Arial, sans-serif;
+    }
+    .fraud-title {
+      color: var(--core-purple);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 1.1rem;
+    }
+    .fraud-form label {
+      color: #444;
+      font-size: 1rem;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 0.18rem;
+      margin-top: 0.6rem;
+    }
+    .fraud-form input, .fraud-form textarea {
+      padding: 0.45rem 0.7rem;
+      border: 2px solid var(--core-purple);
+      border-radius: 8px;
+      font-size: 1rem;
+      background: #fff;
+      outline: none;
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 0.15rem;
+    }
+    .fraud-form textarea {
+      resize: vertical;
+      min-height: 60px;
+      max-height: 250px;
+    }
+    .fraud-form .account-btn {
+      margin-top: 1.1rem;
+      width: 100%;
+      background: #a90429;
+      color: #fff;
+    }
+    .fraud-msg-success {
+      color: var(--core-green);
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+    .fraud-msg-error {
+      color: #a90429;
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="fraud-report-container">
+    <div class="fraud-title">Report Potential Fraud</div>
+    <form id="fraud-form" class="fraud-form" autocomplete="off">
+      <label for="student-email">Your School Email</label>
+      <input type="email" id="student-email" placeholder="e.g. alex.smith@stu.westsilc.org" required />
+      <label for="fraud-details">Brief Information About the Fraud</label>
+      <textarea id="fraud-details" placeholder="Describe what happened..." required></textarea>
+      <button class="account-btn" type="submit">Submit Report</button>
+    </form>
+    <div id="fraud-message"></div>
+  </div>
+  <script>
+    // Simulated backend - in practice, this should notify the teacher/admin system
+    document.getElementById('fraud-form').onsubmit = function(e) {
+      e.preventDefault();
+      const email = document.getElementById('student-email').value.trim();
+      const details = document.getElementById('fraud-details').value.trim();
+      const msgDiv = document.getElementById('fraud-message');
+      if (!email || !details) {
+        msgDiv.textContent = "Please fill in all fields.";
+        msgDiv.className = 'fraud-msg-error';
+        return;
+      }
+      // Simulate notification to teacher admin
+      msgDiv.textContent = "Your fraud report has been submitted and will be reviewed by your teacher.";
+      msgDiv.className = 'fraud-msg-success';
+      document.getElementById('fraud-form').reset();
+    };
+  </script>
+</body>
+</html>

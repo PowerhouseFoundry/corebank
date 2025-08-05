@@ -1,0 +1,88 @@
+<!-- ... (existing code above this remains unchanged) ... -->
+
+    <div class="account-actions">
+      <button class="account-btn" onclick="alert('You have been logged out.')">Logout</button>
+      <button class="account-btn" id="export-pdf-btn" style="background:#444;color:#fff;">Export Statement as PDF</button>
+      <button class="account-btn" id="freeze-card-btn" style="background:#1976d2;color:#fff;">Freeze Debit Card</button>
+      <a href="report-fraud.html" class="account-btn" id="report-fraud-btn" style="background:#a90429;color:#fff;text-align:center;text-decoration:none;display:inline-block;">Report Potential Fraud</a>
+    </div>
+
+    <!-- SAVINGS POT SECTION -->
+    <div class="bank-actions-section">
+      <div class="bank-actions-title">Savings Pot</div>
+      <div style="margin-bottom:0.8rem;">
+        <strong>Savings Balance:</strong> <span id="savings-balance">£0.00</span>
+      </div>
+      <form id="move-to-savings-form" class="bank-actions-form" autocomplete="off">
+        <div>
+          <label for="move-amount">Amount to move to savings</label>
+          <input type="number" min="0.01" step="0.01" id="move-amount" placeholder="e.g. 50.00" required />
+        </div>
+        <button class="account-btn" type="submit">Move to Savings</button>
+      </form>
+      <div id="move-savings-message"></div>
+      <div style="margin-top:1.2rem;">
+        <strong>End-of-Term Rewards Available:</strong>
+        <ul style="margin:0.5rem 0 0 1.2rem;">
+          <li>Amazon Voucher (£30)</li>
+          <li>Cinema Tickets (£15)</li>
+          <li>Meal Out (£25)</li>
+          <li>Shopping Voucher (£20)</li>
+          <li>Sports Experience (£40)</li>
+        </ul>
+        <small style="color:#666;">You can spend your savings pot on these rewards at the end of each term in College.</small>
+      </div>
+    </div>
+
+<!-- ... (rest of the file remains unchanged) ... -->
+<script>
+    // ...existing JS code above remains unchanged...
+
+    // Savings Pot Logic
+    let savingsBalance = 0.00;
+    const savingsBalanceSpan = document.getElementById('savings-balance');
+    const moveSavingsForm = document.getElementById('move-to-savings-form');
+    const moveAmountInput = document.getElementById('move-amount');
+    const moveSavingsMsg = document.getElementById('move-savings-message');
+
+    function updateSavingsDisplay() {
+      savingsBalanceSpan.textContent = "£" + savingsBalance.toFixed(2);
+    }
+    updateSavingsDisplay();
+
+    moveSavingsForm.onsubmit = function(e) {
+      e.preventDefault();
+      let moveAmount = parseFloat(moveAmountInput.value);
+      let currentBalance = parseFloat(accountBalance.textContent.replace("£", "").replace(/,/g, ''));
+      if (!moveAmount || moveAmount <= 0) {
+        moveSavingsMsg.textContent = "Please enter a valid amount.";
+        moveSavingsMsg.className = "action-error";
+        return;
+      }
+      if (currentBalance < moveAmount) {
+        moveSavingsMsg.textContent = "Insufficient funds in main account.";
+        moveSavingsMsg.className = "action-error";
+        return;
+      }
+      // Move money
+      savingsBalance += moveAmount;
+      let newBalance = currentBalance - moveAmount;
+      updateBalance(newBalance);
+      updateSavingsDisplay();
+      // Add to statement
+      let now = new Date();
+      let date = now.toLocaleDateString('en-GB');
+      let desc = "Moved to Savings Pot";
+      let row = document.createElement('tr');
+      row.innerHTML = `<td class="date">${date}</td><td class="desc">${desc}</td><td class="amount-debit" style="text-align:right;">-£${moveAmount.toFixed(2)}</td>`;
+      statementBody.insertBefore(row, statementBody.firstChild);
+      moveSavingsMsg.textContent = "Money moved to savings pot!";
+      moveSavingsMsg.className = "action-success";
+      moveSavingsForm.reset();
+      setTimeout(() => { moveSavingsMsg.textContent = ''; }, 2000);
+    };
+
+    // ...rest of JS code remains unchanged...
+</script>
+</body>
+</html>
